@@ -18,7 +18,7 @@ import sys
 
 # Global variables
 T = 100                                                 # Number of global iterations
-PORT = sys.argv[1]                                      # Listen port. Fixed to 6000
+PORT = int(sys.argv[1])                                 # Listen port. Fixed to 6000
 SUB = 5 if int(sys.argv[2]) == 0 else int(sys.argv[2])  # Sub-sampling number of clients
 K = 5                                                   # Number of clients
 
