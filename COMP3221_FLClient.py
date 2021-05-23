@@ -8,85 +8,95 @@ NOTE:
         1. Sending Hand-shake message TO server
         2. Global model message FROM server TO client
         3. Update model message FROM client TO server
-        4. Design multiple thread to spilt MODEL into several pieces message
+        4. (Maybe) Design multiple thread to spilt MODEL into several pieces message
         and send TO server
     2. We need to set up NEW connection to Server:
         1. init TCP socket and bind it with Server socket with PORT number 6000
 """
 
 # import modules
-import socket
 import sys
 
 # Global variables
 ID = sys.argv[1]                    # Client ID
 PORT = int(sys.argv[2])             # Listen port. From 6001 to 6005
 MODEL_OPTION = int(sys.argv[3])     # Model Option. 0 is for GD, 1 is for Mini-Batch GD
+T = 100                             # Total iterations
+E = 2                               # Epoch per training iteration
 
-def init_model():
-    """
-        TODO:
-            1. Loading the dataset with given client id from command line argument
-            2. Find an efficient way to represent the model in this program
-        :return: The model
-        """
 
-def init_socket():
+def init_client():
     """
-        TODO:
-            1. Initialise socket and set up connection to the Server
-                * sending hand-shaking message to Server
-        :return: The socket
-        """
+    TODO:
+        1. Loading the dataset with given client id from command line argument
+        2. Find an efficient way to represent the model in this program
+    :return: The model
+    """
+
+
+def hand_shaking_to_server():
+    """
+    TODO:
+        1. Initialise socket and set up connection to the Server
+            * sending hand-shaking message to Server
+    :return: The socket
+    """
+
 
 def generate_log():
     """
-        TODO:
-            1. Writing the training loss and accuracy of the global model to the FILE
-                * Generate it at each communication round
-                * File name format ( client(id)_log.txt )
-        :return: None
-        """
+    TODO:
+        1. Writing the training loss and accuracy of the global model to the FILE
+            * Generate it at each communication round
+            * File name format ( client(id)_log.txt )
+    :return: None
+    """
+
 
 def display_info():
     """
-        TODO:
-            1. Displaying the training loss and accuracy to terminal
-            2. Message format
+    TODO:
+        1. Displaying the training loss and accuracy to terminal
+        2. Message format
 
-                    * I am client (id)
-                    * Receiving new global model
-                    * Training loss: %f
-                    * Testing accuracy: (%d)%
-                    * Local training...
-                    * Sending new local model
+                * I am client (id)
+                * Receiving new global model
+                * Training loss: %f
+                * Testing accuracy: (%d)%
+                * Local training...
+                * Sending new local model
 
-        :return: None
+    :return: None
     """
+
 
 def send_local_model():
     """
-        TODO:
-            1. Sending local model to the Server
+    TODO:
+        1. Sending local model to the Server
     :return: None
     """
+
 
 def set_parameters():
     """
-        TODO:
-            1. Receive a global model from the server, replace its local model with the
-                global model
+    TODO:
+        1. Receive a global model from the server, replace its local model with the
+            global model
     :return: None
     """
 
+
 def aggregate_models():
     """
-        TODO:
-            1. Uses the global model to create a new local model
-                * Can be finished in E = 2 local iterations
-                * Based on Model OPT to generate it (0 GD, 1 Mini-Batch GD)
+    TODO:
+        1. Update the new local model
+            * Can be finished in E = 2 local iterations
+            * Based on Model OPT to generate it (0 GD, 1 Mini-Batch GD)
+            * Batch size could be changed
     :return:
     """
+
 
 def main():
     """
@@ -97,12 +107,23 @@ def main():
         3. Setting a loop to listen message from Server
     :return :None
     """
-
     # Init Socket
-    init_socket()
+    hand_shaking_to_server()
 
     # Loading dataset
-    init_model()
+    init_client()
+
+    # TODO: Body of the client
+    #       1. Outer loop to keep receiving & sending model
+    #       2. Train the model with 2 epochs
+    for i in range(1, T):
+        # TODO: Listen the server
+
+        # TODO: Train the local model with GD or mini-batch SGD
+        for e in range(E):
+            pass
+
+        # TODO: Send model to the sever
 
 
 if __name__ == "__main__":
