@@ -16,22 +16,50 @@ NOTE:
 
 # import modules
 import sys
+import os
+import json
+import torch
 
 # Global variables
-ID = sys.argv[1]                    # Client ID
-PORT = int(sys.argv[2])             # Listen port. From 6001 to 6005
-MODEL_OPTION = int(sys.argv[3])     # Model Option. 0 is for GD, 1 is for Mini-Batch GD
-T = 100                             # Total iterations
-E = 2                               # Epoch per training iteration
+ID = sys.argv[1]  # Client ID
+PORT = int(sys.argv[2])  # Listen port. From 6001 to 6005
+MODEL_OPTION = int(sys.argv[3])  # Model Option. 0 is for GD, 1 is for Mini-Batch GD
+T = 100  # Total iterations
+E = 2  # Epoch per training iteration
 
 
-def init_client():
+# noinspection PyTypeChecker
+def init_client(client_id=ID):
     """
     TODO:
         1. Loading the dataset with given client id from command line argument
         2. Find an efficient way to represent the model in this program
     :return: The model
     """
+    train_path = os.path.join("FLdata", "train", "mnist_train_" + str(client_id) + ".json")
+    test_path = os.path.join("FLdata", "test", "mnist_test_" + str(client_id) + ".json")
+    train_data = {}
+    test_data = {}
+
+    with open(os.path.join(train_path), "r") as f_train:
+        train = json.load(f_train)
+        train_data.update(train['user_data'])
+    with open(os.path.join(test_path), "r") as f_test:
+        test = json.load(f_test)
+        test_data.update(test['user_data'])
+
+    image_train = train_data['0']['x']
+    label_train = train_data['0']['y']
+    image_test = test_data['0']['x']
+    label_test = test_data['0']['y']
+
+    image_train = torch.Tensor(image_train).view(-1, 1, 28, 28).type(torch.float32)
+    label_train = torch.Tensor(label_train).type(torch.int64)
+    image_test = torch.Tensor(image_test).view(-1, 1, 28, 28).type(torch.float32)
+    label_test = torch.Tensor(label_test).type(torch.int64)
+    train_samples, test_samples = len(label_train), len(label_test)
+
+    return image_train, label_train, image_test, label_test, train_samples, test_samples
 
 
 def hand_shaking_to_server():
@@ -111,7 +139,7 @@ def main():
     hand_shaking_to_server()
 
     # Loading dataset
-    init_client()
+    # image_train, label_train, image_test, label_test, train_samples, test_samples = init_client(ID)
 
     # TODO: Body of the client
     #       1. Outer loop to keep receiving & sending model
@@ -127,4 +155,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    init_client(ID)
