@@ -20,6 +20,7 @@ import os
 import json
 import torch
 
+
 # Global variables
 ID = sys.argv[1]  # Client ID
 PORT = int(sys.argv[2])  # Listen port. From 6001 to 6005
@@ -112,6 +113,19 @@ def set_parameters():
         1. Receive a global model from the server, replace its local model with the
             global model
     :return: None
+    """
+
+
+def train():
+    """
+    TODO:
+        Training the local model
+    """
+
+
+def test():
+    """
+    TODO: evaluate the accuracy
     """
 
 
