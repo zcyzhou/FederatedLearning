@@ -21,21 +21,11 @@ import json
 import torch
 
 
-# Global variables
-ID = sys.argv[1]  # Client ID
-PORT = int(sys.argv[2])  # Listen port. From 6001 to 6005
-MODEL_OPTION = int(sys.argv[3])  # Model Option. 0 is for GD, 1 is for Mini-Batch GD
-T = 100  # Total iterations
-E = 2  # Epoch per training iteration
-
-
 # noinspection PyTypeChecker
-def init_client(client_id=ID):
+def init_client(client_id):
     """
-    TODO:
-        1. Loading the dataset with given client id from command line argument
-        2. Find an efficient way to represent the model in this program
-    :return: The model
+    Loading and splitting the dataset
+    :return: image_train, label_train, image_test, label_test, train_samples, test_samples
     """
     train_path = os.path.join("FLdata", "train", "mnist_train_" + str(client_id) + ".json")
     test_path = os.path.join("FLdata", "test", "mnist_test_" + str(client_id) + ".json")
@@ -43,11 +33,11 @@ def init_client(client_id=ID):
     test_data = {}
 
     with open(os.path.join(train_path), "r") as f_train:
-        train = json.load(f_train)
-        train_data.update(train['user_data'])
+        train_temp = json.load(f_train)
+        train_data.update(train_temp['user_data'])
     with open(os.path.join(test_path), "r") as f_test:
-        test = json.load(f_test)
-        test_data.update(test['user_data'])
+        test_temp = json.load(f_test)
+        test_data.update(test_temp['user_data'])
 
     image_train = train_data['0']['x']
     label_train = train_data['0']['y']
@@ -63,111 +53,108 @@ def init_client(client_id=ID):
     return image_train, label_train, image_test, label_test, train_samples, test_samples
 
 
-def hand_shaking_to_server():
-    """
-    TODO:
-        1. Initialise socket and set up connection to the Server
-            * sending hand-shaking message to Server
-    :return: The socket
-    """
+class Client:
+    def __init__(self, client_id, port, opt, iterations, epoch):
+        self.client_id = client_id
+        self.port = port
+        self.opt = opt
+        self.iterations = iterations
+        self.epoch = epoch
+        self.image_train, self.label_train, \
+            self.image_test, self.label_test, \
+            self.train_samples, self.test_samples = init_client(client_id)
+        self.model = None
 
+    def hand_shaking_to_server(self):
+        """
+        TODO:
+            1. Initialise socket and set up connection to the Server
+                * sending hand-shaking message to Server
+        :return: The socket
+        """
 
-def generate_log():
-    """
-    TODO:
-        1. Writing the training loss and accuracy of the global model to the FILE
-            * Generate it at each communication round
-            * File name format ( client(id)_log.txt )
-    :return: None
-    """
+    def generate_log(self):
+        """
+        TODO:
+            1. Writing the training loss and accuracy of the global model to the FILE
+                * Generate it at each communication round
+                * File name format ( client(id)_log.txt )
+        :return: None
+        """
 
+    def display_info(self):
+        """
+        TODO:
+            1. Displaying the training loss and accuracy to terminal
+            2. Message format
 
-def display_info():
-    """
-    TODO:
-        1. Displaying the training loss and accuracy to terminal
-        2. Message format
+                    * I am client (id)
+                    * Receiving new global model
+                    * Training loss: %f
+                    * Testing accuracy: (%d)%
+                    * Local training...
+                    * Sending new local model
 
-                * I am client (id)
-                * Receiving new global model
-                * Training loss: %f
-                * Testing accuracy: (%d)%
-                * Local training...
-                * Sending new local model
+        :return: None
+        """
 
-    :return: None
-    """
+    def send_local_model(self):
+        """
+        TODO:
+            1. Sending local model to the Server
+        :return: None
+        """
 
+    def set_parameters(self):
+        """
+        TODO:
+            1. Receive a global model from the server, replace its local model with the
+                global model
+        :return: None
+        """
 
-def send_local_model():
-    """
-    TODO:
-        1. Sending local model to the Server
-    :return: None
-    """
+    def test(self):
+        """
+        TODO: evaluate the accuracy
+        """
 
+    def train(self):
+        """
+        TODO:
+            1. Update the new local model
+                * Can be finished in E = 2 local iterations
+                * Based on Model OPT to generate it (0 GD, 1 Mini-Batch GD)
+                * Batch size could be changed
+        :return:
+        """
 
-def set_parameters():
-    """
-    TODO:
-        1. Receive a global model from the server, replace its local model with the
-            global model
-    :return: None
-    """
+    def run(self):
+        """
+        The body of Client
+        TODO:
+            1. Init socket connection
+            2. Loading dataset
+            3. Setting a loop to listen message from Server
+        :return :None
+        """
+        # Init Socket
+        self.hand_shaking_to_server()
 
+        # Loading dataset
+        # image_train, label_train, image_test, label_test, train_samples, test_samples = init_client(ID)
 
-def train():
-    """
-    TODO:
-        Training the local model
-    """
+        # TODO: Body of the client
+        #       1. Outer loop to keep receiving & sending model
+        #       2. Train the model with 2 epochs
+        for i in range(1, self.iterations):
+            # TODO: Listen the server
 
+            # TODO: Train the local model with GD or mini-batch SGD
+            for e in range(self.epoch):
+                pass
 
-def test():
-    """
-    TODO: evaluate the accuracy
-    """
-
-
-def aggregate_models():
-    """
-    TODO:
-        1. Update the new local model
-            * Can be finished in E = 2 local iterations
-            * Based on Model OPT to generate it (0 GD, 1 Mini-Batch GD)
-            * Batch size could be changed
-    :return:
-    """
-
-
-def main():
-    """
-    The body of Client
-    TODO:
-        1. Init socket connection
-        2. Loading dataset
-        3. Setting a loop to listen message from Server
-    :return :None
-    """
-    # Init Socket
-    hand_shaking_to_server()
-
-    # Loading dataset
-    # image_train, label_train, image_test, label_test, train_samples, test_samples = init_client(ID)
-
-    # TODO: Body of the client
-    #       1. Outer loop to keep receiving & sending model
-    #       2. Train the model with 2 epochs
-    for i in range(1, T):
-        # TODO: Listen the server
-
-        # TODO: Train the local model with GD or mini-batch SGD
-        for e in range(E):
-            pass
-
-        # TODO: Send model to the sever
+            # TODO: Send model to the sever
 
 
 if __name__ == "__main__":
-    # main()
-    init_client(ID)
+    client = Client(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), 100, 2)
