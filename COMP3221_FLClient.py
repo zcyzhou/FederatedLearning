@@ -21,11 +21,13 @@ import json
 import socket
 import pickle
 import torch
+import torch.nn as nn
+
 from torch.utils.data import DataLoader
 
 
 # noinspection PyTypeChecker
-def init_client(client_id):
+def init_client(client_id, opt, batch_size=5):
     """
     Loading and splitting the dataset
     :return: image_train, label_train, image_test, label_test, train_samples, test_samples
@@ -53,26 +55,32 @@ def init_client(client_id):
     label_test = torch.Tensor(label_test).type(torch.int64)
     train_samples, test_samples = len(label_train), len(label_test)
 
-    return image_train, label_train, image_test, label_test, train_samples, test_samples
+    train_data = [(image, label) for image, label in zip(image_train, label_train)]
+    test_data = [(image, label) for image, label in zip(image_test, label_test)]
+
+    if opt == 0:    # 0 means GD
+        train_loader = DataLoader(train_data, train_samples)
+    else:           # 1 means Mini-batch SGD
+        train_loader = DataLoader(train_data, batch_size)
+    test_loader = DataLoader(test_data, test_samples)
+
+    return train_loader, test_loader
 
 
 class Client:
-    def __init__(self, client_id, port, opt, iterations, epoch):
+    def __init__(self, client_id, port, opt, iterations, epoch, learning_rate=0.01):
         self.client_id = client_id
         self.port = port
-        self.opt = opt
+        self.opt = opt      # 0: GD, 1: Mini-batch SGD
         self.iterations = iterations
         self.epoch = epoch
-        self.image_train, self.label_train, \
-            self.image_test, self.label_test, \
-            self.train_samples, self.test_samples = init_client(client_id)
-        self.train_data = [(image, label) for image, label in zip(self.image_train, self.label_train)]
-        self.test_data = [(image, label) for image, label in zip(self.image_test, self.label_test)]
-        self.train_loader = DataLoader(self.train_data, self.train_samples)
-        self.test_loader = DataLoader(self.test_data, self.test_samples)
+        self.train_loader, self.test_loader = init_client(client_id, opt)
         self.model = None
+        self.loss = nn.NLLLoss()
+        self.optimizer = None
+        self.lr = learning_rate
 
-        # Socket for the client (TCP)
+        # Socket for the client (UDP)
         self.sock_listen = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock_listen.bind(('localhost', port))
         self.sock_send = None
@@ -87,7 +95,8 @@ class Client:
         :return: None
         """
         self.sock_send = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        msg = self.client_id[-1] + " " + str(len(self.image_train))
+        # noinspection PyTypeChecker
+        msg = self.client_id[-1] + " " + str(len(self.train_loader.dataset))
         # print(msg)
         self.sock_send.sendto(pickle.dumps(msg), ("localhost", 6000))
 
@@ -175,5 +184,5 @@ class Client:
 
 
 if __name__ == "__main__":
-    client = Client(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), 100, 2)
+    client = Client(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), 100, 2, 0.01)
     client.run()
