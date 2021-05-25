@@ -14,7 +14,9 @@ NOTE:
 """
 
 # Import modules
+import socket
 import sys
+import pickle
 
 
 class Server:
@@ -23,6 +25,10 @@ class Server:
         self.sub_sample = sub_sample
         self.k = 5
         self.iterations = 100
+        self.clients = dict()
+        # Socket for listening client message
+        self.listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.listen_sock.bind(('localhost', port))
 
     def init_model(self):
         """
@@ -35,11 +41,24 @@ class Server:
 
     def detect_clients(self):
         """
-        TODO: Listen the port to detect the hand-shake message from clients
+        Register the clients. Info will be stored in self.clients in format:
+        {<client_id>: <data_size>}
+        Note that <client_id> only contains the number
+        
+        Listen the port to detect the hand-shake message from clients
                 * Everytime get a massage from one new client, add it to a list then sleep 30 seconds
                 * The message includes: <data-size> <client-id>
-        :return: The list of clients
+        :return: Number of clients registered
         """
+        while 1:
+            try:
+                client_id, client_data_size = pickle.loads(self.listen_sock.recv(1024)).split()
+                self.clients[client_id] = int(client_data_size)
+                self.listen_sock.settimeout(30)
+            except socket.timeout:
+                break
+        self.listen_sock.settimeout(None)
+        return len(self.clients)
 
     def broadcast_to_clients(self):
         """
@@ -103,4 +122,5 @@ class Server:
 
 
 if __name__ == "__main__":
-    server = Server(sys.argv[1], int(sys.argv[2]))
+    server = Server(int(sys.argv[1]), int(sys.argv[2]))
+    server.run()

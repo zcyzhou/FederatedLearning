@@ -18,6 +18,8 @@ NOTE:
 import sys
 import os
 import json
+import socket
+import pickle
 import torch
 
 
@@ -64,14 +66,24 @@ class Client:
             self.image_test, self.label_test, \
             self.train_samples, self.test_samples = init_client(client_id)
         self.model = None
+        # Socket for the client (TCP)
+        self.sock_listen = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock_listen.bind(('localhost', port))
+        self.sock_send = None
 
     def hand_shaking_to_server(self):
         """
-        TODO:
+        Init the sock for sending message & send hand-shaking message to server
             1. Initialise socket and set up connection to the Server
                 * sending hand-shaking message to Server
-        :return: The socket
+            2. Message should include: data size & client_id
+                Format: "id size" id is just the number, size is the size of training data
+        :return: None
         """
+        self.sock_send = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        msg = self.client_id[-1] + " " + str(len(self.image_train))
+        print(msg)
+        self.sock_send.sendto(pickle.dumps(msg), ("localhost", 6000))
 
     def generate_log(self):
         """
@@ -158,3 +170,4 @@ class Client:
 
 if __name__ == "__main__":
     client = Client(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), 100, 2)
+    client.run()
