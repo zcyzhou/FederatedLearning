@@ -21,6 +21,7 @@ import json
 import socket
 import pickle
 import torch
+from torch.utils.data import DataLoader
 
 
 # noinspection PyTypeChecker
@@ -65,7 +66,12 @@ class Client:
         self.image_train, self.label_train, \
             self.image_test, self.label_test, \
             self.train_samples, self.test_samples = init_client(client_id)
+        self.train_data = [(image, label) for image, label in zip(self.image_train, self.label_train)]
+        self.test_data = [(image, label) for image, label in zip(self.image_test, self.label_test)]
+        self.train_loader = DataLoader(self.train_data, self.train_samples)
+        self.test_loader = DataLoader(self.test_data, self.test_samples)
         self.model = None
+
         # Socket for the client (TCP)
         self.sock_listen = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock_listen.bind(('localhost', port))
@@ -82,7 +88,7 @@ class Client:
         """
         self.sock_send = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         msg = self.client_id[-1] + " " + str(len(self.image_train))
-        print(msg)
+        # print(msg)
         self.sock_send.sendto(pickle.dumps(msg), ("localhost", 6000))
 
     def generate_log(self):
