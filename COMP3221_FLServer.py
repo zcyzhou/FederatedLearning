@@ -18,6 +18,8 @@ import socket
 import sys
 import pickle
 
+from utils import MLR
+
 
 class Server:
     def __init__(self, port, sub_sample):
@@ -26,12 +28,18 @@ class Server:
         self.k = 5
         self.iterations = 100
         self.clients = dict()
+        self.total_data_size = 0
+        # Randomly generate the global multinomial logistic regression model w_0
+        self.model = MLR()
         # Socket for listening client message
         self.listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.listen_sock.bind(('localhost', port))
+        # Socket for sending global model
+        self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def init_model(self):
         """
+        NOTE: This has been done in __init__(), this code section is only for test
         TODO:
             1. Randomly generate the global model w_0
                 * The model we are recommended to use is <multinomial logistic regression>
@@ -44,7 +52,7 @@ class Server:
         Register the clients. Info will be stored in self.clients in format:
         {<client_id>: <data_size>}
         Note that <client_id> only contains the number
-        
+
         Listen the port to detect the hand-shake message from clients
                 * Everytime get a massage from one new client, add it to a list then sleep 30 seconds
                 * The message includes: <data-size> <client-id>
@@ -58,6 +66,10 @@ class Server:
             except socket.timeout:
                 break
         self.listen_sock.settimeout(None)
+        # Calculate the total training data size
+        for client, data_size in self.clients.items():
+            self.total_data_size += int(data_size)
+
         return len(self.clients)
 
     def broadcast_to_clients(self):
