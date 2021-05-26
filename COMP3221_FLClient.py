@@ -110,15 +110,15 @@ class Client:
         :return: None
         """
 
-    def display_info(self, testing_accuracy):
+    def display_info(self, training_loss, testing_accuracy):
         """
             Displaying the training loss and accuracy to terminal
         :return: None
         """
         print("I am client {}".format(self.client_id[-1]))
         print("Receiving new global model")
-        print("Training loss: {.2f}".format(self.loss))
-        print("Testing accuracy: {.2f}%".format(testing_accuracy))
+        print("Training loss: {}".format(training_loss))
+        print("Testing accuracy: {}%".format(testing_accuracy))
         print("Local training...")
         print("Sending new local model")
 
@@ -180,7 +180,6 @@ class Client:
                 pass
 
             # TODO: Send model to the sever
-
 
 if __name__ == "__main__":
     client = Client(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), 100, 2, 0.01)
