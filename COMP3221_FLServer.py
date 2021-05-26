@@ -14,6 +14,8 @@ NOTE:
 """
 
 # Import modules
+import copy
+import datetime
 import socket
 import sys
 import pickle
@@ -76,11 +78,27 @@ class Server:
         """
         Broadcast the new global model to all registered clients
         (no matter whether we use the local model of that client)
-        TODO:
             1. Format the message
+                [<header>, <weight/bias1>, <weight/bias2>, ...]
+                <head>: weight/end/bias
             2. Send message to clients
         :return: None
         """
+        weights = self.model.state_dict()['fc1.weight'].reshape(10, 8, -1)
+        bias = self.model.state_dict()['fc1.bias']
+        # Send to ALL the clients
+        for client_id, _ in self.clients.items():
+            # Send weight first
+            for weight in weights:
+                for w in weight:
+                    msg = w.tolist()
+                    msg.insert(0, 'weight')
+                    self.send_sock.sendto(pickle.dumps(msg), ('localhost', 6000 + int(client_id)))
+            self.send_sock.sendto(pickle.dumps(["weight end"]), ('localhost', 6000 + int(client_id)))
+            # Send bias
+            msg = bias.tolist()
+            msg.insert(0, 'bias')
+            self.send_sock.sendto(pickle.dumps(msg), ('localhost', 6000 + int(client_id)))
 
     def listen_clients_message(self):
         """
@@ -123,14 +141,15 @@ class Server:
         #       1. Listen, Aggregate, Broadcast
         #       2. Handle new clients (Probably handle this by another thread)
         for i in range(1, self.iterations):
+            pass
             # TODO: Listen from clients
-            self.listen_clients_message()
+            # self.listen_clients_message()
 
             # TODO: Aggregating model
-            self.aggregate_models()
+            # self.aggregate_models()
 
             # TODO: Broadcast new model
-            self.broadcast_to_clients()
+            # self.broadcast_to_clients()
 
 
 if __name__ == "__main__":
