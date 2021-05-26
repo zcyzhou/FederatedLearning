@@ -19,6 +19,7 @@ import sys
 import os
 import json
 import socket
+import copy
 import pickle
 import torch
 import torch.nn as nn
@@ -96,7 +97,7 @@ class Client:
         """
         self.sock_send = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # noinspection PyTypeChecker
-        msg = self.client_id[-1] + " " + str(len(self.train_loader.dataset))
+        msg = self.client_id[-1] + " " + str(len(self.train_loader.dataset)) + " " + str(self.port)
         # print(msg)
         self.sock_send.sendto(pickle.dumps(msg), ("localhost", 6000))
 
@@ -109,21 +110,17 @@ class Client:
         :return: None
         """
 
-    def display_info(self):
+    def display_info(self, testing_accuracy):
         """
-        TODO:
-            1. Displaying the training loss and accuracy to terminal
-            2. Message format
-
-                    * I am client (id)
-                    * Receiving new global model
-                    * Training loss: %f
-                    * Testing accuracy: (%d)%
-                    * Local training...
-                    * Sending new local model
-
+            Displaying the training loss and accuracy to terminal
         :return: None
         """
+        print("I am client {}".format(self.client_id[-1]))
+        print("Receiving new global model")
+        print("Training loss: {.2f}".format(self.loss))
+        print("Testing accuracy: {.2f}%".format(testing_accuracy))
+        print("Local training...")
+        print("Sending new local model")
 
     def send_local_model(self):
         """
@@ -139,6 +136,8 @@ class Client:
                 global model
         :return: None
         """
+        server_model = pickle.loads(self.sock_listen.recv(1024))
+        self.model = copy.deepcopy(server_model)
 
     def test(self):
         """

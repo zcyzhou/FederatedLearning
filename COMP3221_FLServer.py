@@ -17,6 +17,9 @@ NOTE:
 import socket
 import sys
 import pickle
+import copy
+
+import torch
 
 from utils import MLR
 
@@ -60,9 +63,13 @@ class Server:
         """
         while 1:
             try:
-                client_id, client_data_size = pickle.loads(self.listen_sock.recv(1024)).split()
-                self.clients[client_id] = int(client_data_size)
+                client_id, client_data_size, client_port = pickle.loads(self.listen_sock.recv(1024)).split()
+                self.clients[client_id] = [int(client_data_size), int(client_port)]
                 self.listen_sock.settimeout(30)
+
+                # send back the current sever model to the client
+                # TODO: Message too long, need to use multiple thread split the model to send
+                # self.send_sock.sendto(pickle.dumps(self.model), ("localhost", int(client_port)))
             except socket.timeout:
                 break
         self.listen_sock.settimeout(None)
@@ -81,6 +88,11 @@ class Server:
             2. Send message to clients
         :return: None
         """
+
+        # for client in self.clients:
+        #     client_port = self.clients[client][1]
+        # TODO: Message too long, need to use multiple thread split the model to send
+        # self.send_sock.sendto(pickle.dumps(self.model), ("localhost", int(client_port)))
 
     def listen_clients_message(self):
         """
@@ -101,6 +113,14 @@ class Server:
             2. Update the model
         :return: New Model
         """
+        server_model = copy.deepcopy(self.model)
+
+        # clear model before aggregation
+        # for param in server_model.parameters():
+        #     param.data = torch.zeros_like(param.data)
+
+        # TODO: loop through the user dictionary model to generate new server model
+        # self.model = copy.deepcopy(server_model)
 
     def run(self):
         """
