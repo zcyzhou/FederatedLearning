@@ -97,7 +97,7 @@ class Client:
         """
         self.sock_send = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # noinspection PyTypeChecker
-        msg = self.client_id[-1] + " " + str(len(self.train_loader.dataset)) + " " + str(self.port)
+        msg = self.client_id[-1] + " " + str(len(self.train_loader.dataset))
         # print(msg)
         self.sock_send.sendto(pickle.dumps(msg), ("localhost", 6000))
 
