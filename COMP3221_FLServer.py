@@ -90,7 +90,7 @@ class Server:
         """
 
         # for client in self.clients:
-        #     client_port = self.clients[client][1]
+        #     client_port = int(self.clients[client]) + self.port
         # TODO: Message too long, need to use multiple thread split the model to send
         # self.send_sock.sendto(pickle.dumps(self.model), ("localhost", int(client_port)))
 
@@ -105,7 +105,7 @@ class Server:
         :return: Message from clients
         """
 
-    def aggregate_models(self):
+    def aggregate_models(self, client_model, client_id):
         """
         Update the global model managed by server by aggregating updates from all/some of the clients
         TODO:
@@ -113,13 +113,16 @@ class Server:
             2. Update the model
         :return: New Model
         """
-        server_model = copy.deepcopy(self.model)
+        # server_model = copy.deepcopy(self.model)
 
         # clear model before aggregation
         # for param in server_model.parameters():
         #     param.data = torch.zeros_like(param.data)
 
-        # TODO: loop through the user dictionary model to generate new server model
+        # for server_param, client_param in zip(server_model.parameters(), client_model.parameters()):
+        #     server_param.data = server_param.data + \
+        #                         client_param.clone() * self.clients[client_id] / self.total_data_size
+
         # self.model = copy.deepcopy(server_model)
 
     def run(self):
