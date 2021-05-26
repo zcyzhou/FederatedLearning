@@ -24,6 +24,7 @@ import torch
 import torch.nn as nn
 
 from torch.utils.data import DataLoader
+from utils import MLR
 
 
 # noinspection PyTypeChecker
@@ -75,15 +76,15 @@ class Client:
         self.iterations = iterations
         self.epoch = epoch
         self.train_loader, self.test_loader = init_client(client_id, opt)
-        self.model = None
+        self.model = MLR()
         self.loss = nn.NLLLoss()
         self.optimizer = None
         self.lr = learning_rate
 
         # Socket for the client (UDP)
-        self.sock_listen = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock_listen.bind(('localhost', port))
-        self.sock_send = None
+        self.listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.listen_sock.bind(('localhost', port))
+        self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def hand_shaking_to_server(self):
         """
@@ -94,11 +95,10 @@ class Client:
                 Format: "id size" id is just the number, size is the size of training data
         :return: None
         """
-        self.sock_send = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # noinspection PyTypeChecker
         msg = self.client_id[-1] + " " + str(len(self.train_loader.dataset))
         # print(msg)
-        self.sock_send.sendto(pickle.dumps(msg), ("localhost", 6000))
+        self.send_sock.sendto(pickle.dumps(msg), ("localhost", 6000))
 
     def generate_log(self):
         """
@@ -125,18 +125,32 @@ class Client:
         :return: None
         """
 
+    def set_global_model(self):
+        """
+        (Used to called set_parameters())
+        Receive a global model from the server, replace the local model with the global model
+        """
+        global_weight = []
+        state_dict = self.model.state_dict()
+        while 1:
+            msg = self.listen_sock.recv(1024)
+            msg = pickle.loads(msg)
+            msg_header = msg.pop(0)
+            if msg_header == "weight":
+                global_weight.append(msg)
+            elif msg_header == "weight end":
+                global_weight = torch.Tensor(global_weight).reshape(10, 784)
+                state_dict['fc1.weight'] = global_weight
+            elif msg_header == "bias":
+                global_bias = torch.Tensor(msg)
+                state_dict['fc1.bias'] = global_bias
+                self.model.load_state_dict(state_dict)
+                break
+
     def send_local_model(self):
         """
         TODO:
             1. Sending local model to the Server
-        :return: None
-        """
-
-    def set_parameters(self):
-        """
-        TODO:
-            1. Receive a global model from the server, replace its local model with the
-                global model
         :return: None
         """
 
@@ -167,8 +181,8 @@ class Client:
         # Init Socket
         self.hand_shaking_to_server()
 
-        # Loading dataset
-        # image_train, label_train, image_test, label_test, train_samples, test_samples = init_client(ID)
+        # Init model (Just for test, this should be in the main loop)
+        self.set_global_model()
 
         # TODO: Body of the client
         #       1. Outer loop to keep receiving & sending model
