@@ -109,21 +109,17 @@ class Client:
         :return: None
         """
 
-    def display_info(self):
+    def display_info(self, training_loss, testing_accuracy):
         """
-        TODO:
-            1. Displaying the training loss and accuracy to terminal
-            2. Message format
-
-                    * I am client (id)
-                    * Receiving new global model
-                    * Training loss: %f
-                    * Testing accuracy: (%d)%
-                    * Local training...
-                    * Sending new local model
-
+            Displaying the training loss and accuracy to terminal
         :return: None
         """
+        print("I am client {}".format(self.client_id[-1]))
+        print("Receiving new global model")
+        print("Training loss: {}".format(training_loss))
+        print("Testing accuracy: {}%".format(testing_accuracy))
+        print("Local training...")
+        print("Sending new local model")
 
     def set_global_model(self):
         """

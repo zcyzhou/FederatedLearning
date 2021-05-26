@@ -19,6 +19,9 @@ import datetime
 import socket
 import sys
 import pickle
+import copy
+
+import torch
 
 from utils import MLR
 
@@ -65,6 +68,10 @@ class Server:
                 client_id, client_data_size = pickle.loads(self.listen_sock.recv(1024)).split()
                 self.clients[client_id] = int(client_data_size)
                 self.listen_sock.settimeout(30)
+
+                # send back the current sever model to the client
+                # TODO: Message too long, need to use multiple thread split the model to send
+                # self.send_sock.sendto(pickle.dumps(self.model), ("localhost", self.port + int(client_id)))
             except socket.timeout:
                 break
         self.listen_sock.settimeout(None)
@@ -100,6 +107,11 @@ class Server:
             msg.insert(0, 'bias')
             self.send_sock.sendto(pickle.dumps(msg), ('localhost', 6000 + int(client_id)))
 
+        # for client in self.clients:
+        #     client_port = int(self.clients[client]) + self.port
+        # TODO: Message too long, need to use multiple thread split the model to send
+        # self.send_sock.sendto(pickle.dumps(self.model), ("localhost", int(client_port)))
+
     def listen_clients_message(self):
         """
         Listen the update message from ALL clients
@@ -111,7 +123,7 @@ class Server:
         :return: Message from clients
         """
 
-    def aggregate_models(self):
+    def aggregate_models(self, client_model, client_id):
         """
         Update the global model managed by server by aggregating updates from all/some of the clients
         TODO:
@@ -119,6 +131,17 @@ class Server:
             2. Update the model
         :return: New Model
         """
+        # server_model = copy.deepcopy(self.model)
+
+        # clear model before aggregation
+        # for param in server_model.parameters():
+        #     param.data = torch.zeros_like(param.data)
+
+        # for server_param, client_param in zip(server_model.parameters(), client_model.parameters()):
+        #     server_param.data = server_param.data + \
+        #                         client_param.clone() * self.clients[client_id] / self.total_data_size
+
+        # self.model = copy.deepcopy(server_model)
 
     def run(self):
         """
