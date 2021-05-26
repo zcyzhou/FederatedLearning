@@ -14,14 +14,9 @@ NOTE:
 """
 
 # Import modules
-import copy
-import datetime
 import socket
 import sys
 import pickle
-import copy
-
-import torch
 
 from utils import MLR
 
@@ -68,10 +63,6 @@ class Server:
                 client_id, client_data_size = pickle.loads(self.listen_sock.recv(1024)).split()
                 self.clients[client_id] = int(client_data_size)
                 self.listen_sock.settimeout(30)
-
-                # send back the current sever model to the client
-                # TODO: Message too long, need to use multiple thread split the model to send
-                # self.send_sock.sendto(pickle.dumps(self.model), ("localhost", self.port + int(client_id)))
             except socket.timeout:
                 break
         self.listen_sock.settimeout(None)
@@ -106,11 +97,6 @@ class Server:
             msg = bias.tolist()
             msg.insert(0, 'bias')
             self.send_sock.sendto(pickle.dumps(msg), ('localhost', 6000 + int(client_id)))
-
-        # for client in self.clients:
-        #     client_port = int(self.clients[client]) + self.port
-        # TODO: Message too long, need to use multiple thread split the model to send
-        # self.send_sock.sendto(pickle.dumps(self.model), ("localhost", int(client_port)))
 
     def listen_clients_message(self):
         """
