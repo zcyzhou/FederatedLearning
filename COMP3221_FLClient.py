@@ -149,6 +149,19 @@ class Client:
             1. Sending local model to the Server
         :return: None
         """
+        weights = self.model.state_dict()['fc1.weight'].reshape(10, 8, -1)
+        bias = self.model.state_dict()['fc1.bias']
+        # Send weight
+        for weight in weights:
+            for w in weight:
+                msg = w.tolist()
+                msg.insert(0, 'weight ' + self.client_id[-1])
+                self.send_sock.sendto(pickle.dumps(msg), ('localhost', 6000))
+        self.send_sock.sendto(pickle.dumps(["end " + self.client_id[-1]]), ('localhost', 6000))
+        # Send bias
+        msg = bias.tolist()
+        msg.insert(0, 'bias ' + self.client_id[-1])
+        self.send_sock.sendto(pickle.dumps(msg), ('localhost', 6000))
 
     def test(self):
         """
@@ -179,6 +192,7 @@ class Client:
 
         # Init model (Just for test, this should be in the main loop)
         self.set_global_model()
+        self.send_local_model()
 
         # TODO: Body of the client
         #       1. Outer loop to keep receiving & sending model
