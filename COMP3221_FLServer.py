@@ -14,9 +14,12 @@ NOTE:
 """
 
 # Import modules
+import random
 import socket
 import sys
 import pickle
+
+import torch
 
 from utils import MLR
 
@@ -24,7 +27,10 @@ from utils import MLR
 class Server:
     def __init__(self, port, sub_sample):
         self.port = port
-        self.sub_sample = sub_sample
+        if sub_sample == 0:
+            self.sub_sample = 5
+        elif sub_sample == 1:
+            self.sub_sample = 2
         self.k = 5
         self.iterations = 100
         self.clients = dict()
@@ -100,34 +106,64 @@ class Server:
 
     def listen_clients_message(self):
         """
+        DO NOT need to call this explicitly, this func would be invoked in aggregate_models() function
         Listen the update message from ALL clients
         NOTE:
             Even if we may only use a few of these clients' message, we still need to get message from all of them
-        TODO:
             1. Receive message from ALL clients
             2. Unpack the update information
-        :return: Message from clients
+        :return: Dictionary of all clients' models
+                    {
+                        client_id: {'weight': <Tensor>, 'bias': <Tensor>},
+                        client_id: {...},
+                        ...
+                    }
         """
+        client_models = dict()
+        received_model = 0
+        for client in self.clients.keys():
+            client_models[client] = dict()
+            client_models[client]['weight'] = []
+        while 1:
+            msg = self.listen_sock.recv(1024)
+            msg = pickle.loads(msg)
+            header = msg.pop(0).split()
+            if header[0] == 'weight':
+                client_models[header[1]]['weight'].append(msg)
+            elif header[0] == 'end':
+                client_models[header[1]]['weight'] = torch.Tensor(client_models[header[1]]['weight']).reshape(10, 784)
+            elif header[0] == 'bias':
+                client_models[header[1]]['bias'] = msg
+                client_models[header[1]]['bias'] = torch.Tensor(client_models[header[1]]['bias'])
+                received_model += 1
+            if received_model == len(self.clients):
+                break
+        return client_models
 
-    def aggregate_models(self, client_model, client_id):
+    def aggregate_models(self):
         """
         Update the global model managed by server by aggregating updates from all/some of the clients
-        TODO:
+        This method would invoke listen_clients_message
             1. Pick the subset of the clients
             2. Update the model
         :return: New Model
         """
-        # server_model = copy.deepcopy(self.model)
+        new_weight = torch.zeros(10, 784)
+        new_bias = torch.zeros(10)
+        sub_clients = random.sample(self.clients.keys(), self.sub_sample)
+        total_samples = sum([self.clients[client] for client in sub_clients])
+        client_models = self.listen_clients_message()
 
-        # clear model before aggregation
-        # for param in server_model.parameters():
-        #     param.data = torch.zeros_like(param.data)
+        for client in sub_clients:
+            # For test only
+            print(self.clients[client])
+            new_weight += client_models[client]['weight'] * self.clients[client] / total_samples
+            new_bias += client_models[client]['bias'] * self.clients[client] / total_samples
 
-        # for server_param, client_param in zip(server_model.parameters(), client_model.parameters()):
-        #     server_param.data = server_param.data + \
-        #                         client_param.clone() * self.clients[client_id] / self.total_data_size
-
-        # self.model = copy.deepcopy(server_model)
+        state_dict = self.model.state_dict()
+        state_dict['fc1.weight'] = new_weight
+        state_dict['fc1.bias'] = new_bias
+        self.model.load_state_dict(state_dict)
 
     def run(self):
         """
@@ -151,10 +187,7 @@ class Server:
         #       2. Handle new clients (Probably handle this by another thread)
         for i in range(1, self.iterations):
             pass
-            # TODO: Listen from clients
-            # self.listen_clients_message()
-
-            # TODO: Aggregating model
+            # TODO: Listen from clients and Aggregating model
             # self.aggregate_models()
 
             # TODO: Broadcast new model
