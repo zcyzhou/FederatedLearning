@@ -43,16 +43,6 @@ class Server:
         # Socket for sending global model
         self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def init_model(self):
-        """
-        NOTE: This has been done in __init__(), this code section is only for test
-        TODO:
-            1. Randomly generate the global model w_0
-                * The model we are recommended to use is <multinomial logistic regression>
-            2. Find an efficient way to represent the model in this program
-        :return: The model
-        """
-
     def detect_clients(self):
         """
         Register the clients. Info will be stored in self.clients in format:
@@ -155,8 +145,6 @@ class Server:
         client_models = self.listen_clients_message()
 
         for client in sub_clients:
-            # For test only
-            print(self.clients[client])
             new_weight += client_models[client]['weight'] * self.clients[client] / total_samples
             new_bias += client_models[client]['bias'] * self.clients[client] / total_samples
 
@@ -168,30 +156,25 @@ class Server:
     def run(self):
         """
         Body of the server
-        TODO:
             1. Init the global model
             2. Detect clients
         :return: None
         """
-        # Init the model
-        self.init_model()
-
         # Detect clients
         self.detect_clients()
 
         # Send initial global model
         self.broadcast_to_clients()
 
-        # TODO: The federated learning loop
-        #       1. Listen, Aggregate, Broadcast
-        #       2. Handle new clients (Probably handle this by another thread)
+        # 1. Listen, Aggregate, Broadcast
+        # 2. Handle new clients (Probably handle this by another thread)
         for i in range(1, self.iterations):
             pass
-            # TODO: Listen from clients and Aggregating model
-            # self.aggregate_models()
+            # Listen from clients and Aggregating model
+            self.aggregate_models()
 
-            # TODO: Broadcast new model
-            # self.broadcast_to_clients()
+            # Broadcast new model
+            self.broadcast_to_clients()
 
 
 if __name__ == "__main__":
