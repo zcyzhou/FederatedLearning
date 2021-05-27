@@ -78,8 +78,7 @@ class Client:
         self.train_loader, self.test_loader = init_client(client_id, opt)
         self.model = MLR()
         self.loss = nn.NLLLoss()
-        self.optimizer = None
-        self.lr = learning_rate
+        self.optimizer = torch.optim.SGD(self.model.parameters(), lr=learning_rate)
 
         # Socket for the client (UDP)
         self.listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -145,8 +144,7 @@ class Client:
 
     def send_local_model(self):
         """
-        TODO:
-            1. Sending local model to the Server
+        Sending local model to the Server
         :return: None
         """
         weights = self.model.state_dict()['fc1.weight'].reshape(10, 8, -1)
@@ -167,21 +165,47 @@ class Client:
         """
         TODO: evaluate the accuracy
         """
+        test_acc = 0
+        self.model.eval()
+        for image, label in self.test_loader:
+            output = self.model(image)
+            test_acc += (torch.sum(torch.argmax(output, dim=1) == label) * 1. / label.shape[0]).item()
+        return test_acc
+
+    def train_loss(self):
+        """
+        Training loss on the training data before training
+        """
+        training_loss = 0
+        self.model.eval()
+        for image, label in self.train_loader:
+            output = self.model(image)
+            training_loss += self.loss(output, label)
+        training_loss = training_loss / len(self.train_loader.dataset)
+        return training_loss
 
     def train(self):
         """
-        TODO:
             1. Update the new local model
                 * Can be finished in E = 2 local iterations
                 * Based on Model OPT to generate it (0 GD, 1 Mini-Batch GD)
                 * Batch size could be changed
         :return:
         """
+        loss = 0
+        self.model.train()
+        for epoch in range(1, self.epoch + 1):
+            for batch_idx, (image, label) in enumerate(self.train_loader):
+                self.optimizer.zero_grad()
+                output = self.model(image)
+                loss = self.loss(output, label)
+                loss.backward()
+                self.optimizer.step()
+        return loss.data
 
     def run(self):
         """
         The body of Client
-        TODO:
             1. Init socket connection
             2. Loading dataset
             3. Setting a loop to listen message from Server
@@ -194,17 +218,32 @@ class Client:
         self.set_global_model()
         self.send_local_model()
 
-        # TODO: Body of the client
-        #       1. Outer loop to keep receiving & sending model
-        #       2. Train the model with 2 epochs
+        # Main loop of the client
         for i in range(1, self.iterations):
-            # TODO: Listen the server
+            print("I am client {}".format(self.client_id[-1]))
+            print("Receiving new global model")
 
-            # TODO: Train the local model with GD or mini-batch SGD
-            for e in range(self.epoch):
-                pass
+            # Listen the server
+            self.set_global_model()
 
-            # TODO: Send model to the sever
+            # Evaluate training loss
+            training_loss = self.train_loss()
+            print("Training loss: {}".format(training_loss))
+
+            # Test accuracy of global model
+            testing_accuracy = self.test()
+            print("Testing accuracy: {}%".format(testing_accuracy))
+
+            # Local training
+            self.train()
+            print("Local training...")
+
+            # Send local model to server
+            print("Sending new local model")
+            self.send_local_model()
+
+            # Print an empty line to separate the output
+            print("")
 
 
 if __name__ == "__main__":
