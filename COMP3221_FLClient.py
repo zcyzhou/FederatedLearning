@@ -180,7 +180,7 @@ class Client:
         self.model.eval()
         for image, label in self.train_loader:
             output = self.model(image)
-            training_loss += self.loss(output, label)
+            training_loss += self.loss(output, label).data
         training_loss = training_loss / len(self.train_loader.dataset)
         return training_loss
 
