@@ -140,7 +140,7 @@ class Server:
         """
         new_weight = torch.zeros(10, 784)
         new_bias = torch.zeros(10)
-        sub_clients = random.sample(self.clients.keys(), self.sub_sample)
+        sub_clients = random.sample(list(self.clients.keys()), self.sub_sample)
         total_samples = sum([self.clients[client] for client in sub_clients])
         client_models = self.listen_clients_message()
 
