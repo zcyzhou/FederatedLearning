@@ -126,6 +126,7 @@ class Server:
                 client_models[header[1]]['bias'] = msg
                 client_models[header[1]]['bias'] = torch.Tensor(client_models[header[1]]['bias'])
                 received_model += 1
+                print("Getting local model from client {}".format(header[1]))
             if received_model == len(self.clients):
                 break
         return client_models
@@ -168,14 +169,20 @@ class Server:
 
         # 1. Listen, Aggregate, Broadcast
         # 2. Handle new clients (Probably handle this by another thread)
-        for i in range(1, self.iterations):
-            pass
+        for i in range(0, self.iterations):
+            print("Global Iteration {}".format(i + 1))
+            print("Total Number of clients: {}".format(len(self.clients)))
+
             # Listen from clients and Aggregating model
             self.aggregate_models()
+            print("Aggregating new global model")
 
             # Broadcast new model
+            print("Boardcasting new global model")
             self.broadcast_to_clients()
 
+            # Print an empty line to separate the output
+            print("")
 
 if __name__ == "__main__":
     server = Server(int(sys.argv[1]), int(sys.argv[2]))
