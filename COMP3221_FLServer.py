@@ -111,24 +111,39 @@ class Server:
         """
         client_models = dict()
         received_model = 0
+        new_connection = dict()
         for client in self.clients.keys():
             client_models[client] = dict()
             client_models[client]['weight'] = []
         while 1:
             msg = self.listen_sock.recv(1024)
             msg = pickle.loads(msg)
-            header = msg.pop(0).split()
-            if header[0] == 'weight':
-                client_models[header[1]]['weight'].append(msg)
-            elif header[0] == 'end':
-                client_models[header[1]]['weight'] = torch.Tensor(client_models[header[1]]['weight']).reshape(10, 784)
-            elif header[0] == 'bias':
-                client_models[header[1]]['bias'] = msg
-                client_models[header[1]]['bias'] = torch.Tensor(client_models[header[1]]['bias'])
-                received_model += 1
-                print("Getting local model from client {}".format(header[1]))
-            if received_model == len(self.clients):
-                break
+
+            # determine the type of the msg recv from client
+            # if it is model message, then keep receiving
+            # if it is hand shaking msg, then store in the temporary connection dict
+            if type(msg) == list:
+                header = msg.pop(0).split()
+                if header[0] == 'weight':
+                    client_models[header[1]]['weight'].append(msg)
+                elif header[0] == 'end':
+                    client_models[header[1]]['weight'] = torch.Tensor(client_models[header[1]]['weight']).reshape(10, 784)
+                elif header[0] == 'bias':
+                    client_models[header[1]]['bias'] = msg
+                    client_models[header[1]]['bias'] = torch.Tensor(client_models[header[1]]['bias'])
+                    received_model += 1
+                    print("Getting local model from client {}".format(header[1]))
+                if received_model == len(self.clients):
+                    break
+            else:
+                client_id, client_data_size = msg.split()
+                new_connection[client_id] = int(client_data_size)
+
+        # update new client id and its data size to the self.clients
+        if len(new_connection) > 0:
+            for client, data_size in new_connection.items():
+                self.clients[client] = data_size
+
         return client_models
 
     def aggregate_models(self):
