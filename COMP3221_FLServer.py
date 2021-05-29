@@ -151,7 +151,7 @@ class Server:
                 new_connection[client_id] = int(client_data_size)
 
         # evaluate the global model across all connecting clients
-        self.training_loss.append(total_training / self.sub_sample)
+        self.training_loss.append(total_training / received_model)
         self.testing_accuracy.append(total_testing / received_model)
 
         # update new client id and its data size to the self.clients
