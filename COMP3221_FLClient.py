@@ -228,7 +228,7 @@ class Client:
 
             # Test accuracy of global model
             testing_accuracy = self.test()
-            print("Testing accuracy: {}%".format(testing_accuracy))
+            print("Testing accuracy: {}%".format(testing_accuracy*100))
 
             # Local training
             self.train()
