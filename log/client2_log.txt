@@ -1,0 +1,400 @@
+Round 1
+Training loss: 0.0008760683704167604
+Testing accuracy: 0.054808687418699265%
+
+Round 2
+Training loss: 0.0004759855510201305
+Testing accuracy: 0.5367114543914795%
+
+Round 3
+Training loss: 0.00038138116360642016
+Testing accuracy: 0.6783867478370667%
+
+Round 4
+Training loss: 0.000317166093736887
+Testing accuracy: 0.7693898677825928%
+
+Round 5
+Training loss: 0.0002733021101448685
+Testing accuracy: 0.8324715495109558%
+
+Round 6
+Training loss: 0.00024233627482317388
+Testing accuracy: 0.8655635714530945%
+
+Round 7
+Training loss: 0.00027833940112031996
+Testing accuracy: 0.7435367107391357%
+
+Round 8
+Training loss: 0.0003240948135498911
+Testing accuracy: 0.6763185262680054%
+
+Round 9
+Training loss: 0.00027214729925617576
+Testing accuracy: 0.7352637052536011%
+
+Round 10
+Training loss: 0.00023578351829200983
+Testing accuracy: 0.7745605111122131%
+
+Round 11
+Training loss: 0.00028429788653738797
+Testing accuracy: 0.7197518348693848%
+
+Round 12
+Training loss: 0.0002455989015288651
+Testing accuracy: 0.759048581123352%
+
+Round 13
+Training loss: 0.00021722195378970355
+Testing accuracy: 0.7911065220832825%
+
+Round 14
+Training loss: 0.00019581906963139772
+Testing accuracy: 0.8138573169708252%
+
+Round 15
+Training loss: 0.0002467093581799418
+Testing accuracy: 0.7580145001411438%
+
+Round 16
+Training loss: 0.0002803011448122561
+Testing accuracy: 0.7249224185943604%
+
+Round 17
+Training loss: 0.00026960272225551307
+Testing accuracy: 0.7352637052536011%
+
+Round 18
+Training loss: 0.0002368233836023137
+Testing accuracy: 0.7662875056266785%
+
+Round 19
+Training loss: 0.0002694116556085646
+Testing accuracy: 0.7383660674095154%
+
+Round 20
+Training loss: 0.00023778907780069858
+Testing accuracy: 0.7642192244529724%
+
+Round 21
+Training loss: 0.0003588353574741632
+Testing accuracy: 0.633919358253479%
+
+Round 22
+Training loss: 0.00044164893915876746
+Testing accuracy: 0.5656670331954956%
+
+Round 23
+Training loss: 0.0004981870297342539
+Testing accuracy: 0.5367114543914795%
+
+Round 24
+Training loss: 0.00039721940993331373
+Testing accuracy: 0.6101344227790833%
+
+Round 25
+Training loss: 0.0005304186488501728
+Testing accuracy: 0.5305067300796509%
+
+Round 26
+Training loss: 0.0005296068266034126
+Testing accuracy: 0.5274043679237366%
+
+Round 27
+Training loss: 0.0005497107631526887
+Testing accuracy: 0.5170630812644958%
+
+Round 28
+Training loss: 0.0004804144555237144
+Testing accuracy: 0.5594622492790222%
+
+Round 29
+Training loss: 0.0004409495450090617
+Testing accuracy: 0.5977249145507812%
+
+Round 30
+Training loss: 0.0005805842229165137
+Testing accuracy: 0.4901758134365082%
+
+Round 31
+Training loss: 0.0005619494477286935
+Testing accuracy: 0.5015512108802795%
+
+Round 32
+Training loss: 0.00044887009426020086
+Testing accuracy: 0.5884177684783936%
+
+Round 33
+Training loss: 0.0005827343557029963
+Testing accuracy: 0.48603931069374084%
+
+Round 34
+Training loss: 0.0005928011378273368
+Testing accuracy: 0.4746639132499695%
+
+Round 35
+Training loss: 0.0005897037917748094
+Testing accuracy: 0.47362977266311646%
+
+Round 36
+Training loss: 0.0006586895324289799
+Testing accuracy: 0.4632885158061981%
+
+Round 37
+Training loss: 0.0006226361729204655
+Testing accuracy: 0.46742501854896545%
+
+Round 38
+Training loss: 0.0004941225633956492
+Testing accuracy: 0.5718717575073242%
+
+Round 39
+Training loss: 0.0005126182804815471
+Testing accuracy: 0.5491210222244263%
+
+Round 40
+Training loss: 0.00043696508510038257
+Testing accuracy: 0.6039296984672546%
+
+Round 41
+Training loss: 0.00041367721860297024
+Testing accuracy: 0.6235780715942383%
+
+Round 42
+Training loss: 0.0003988961107097566
+Testing accuracy: 0.6390899419784546%
+
+Round 43
+Training loss: 0.0003682709066197276
+Testing accuracy: 0.659772515296936%
+
+Round 44
+Training loss: 0.0004755859263241291
+Testing accuracy: 0.5770424008369446%
+
+Round 45
+Training loss: 0.0005247863591648638
+Testing accuracy: 0.5325749516487122%
+
+Round 46
+Training loss: 0.00047614926006644964
+Testing accuracy: 0.5749741196632385%
+
+Round 47
+Training loss: 0.0004858970642089844
+Testing accuracy: 0.5687693953514099%
+
+Round 48
+Training loss: 0.0005766451358795166
+Testing accuracy: 0.5098242163658142%
+
+Round 49
+Training loss: 0.0005852191825397313
+Testing accuracy: 0.5139607191085815%
+
+Round 50
+Training loss: 0.0005887956940568984
+Testing accuracy: 0.5025852918624878%
+
+Round 51
+Training loss: 0.0004999434459023178
+Testing accuracy: 0.5667011141777039%
+
+Round 52
+Training loss: 0.0004996753996238112
+Testing accuracy: 0.5625646114349365%
+
+Round 53
+Training loss: 0.0005067719030193985
+Testing accuracy: 0.5573940277099609%
+
+Round 54
+Training loss: 0.0004317677521612495
+Testing accuracy: 0.620475709438324%
+
+Round 55
+Training loss: 0.0003852357331197709
+Testing accuracy: 0.6608065962791443%
+
+Round 56
+Training loss: 0.0004747046623378992
+Testing accuracy: 0.59565669298172%
+
+Round 57
+Training loss: 0.0004797012952622026
+Testing accuracy: 0.5822130441665649%
+
+Round 58
+Training loss: 0.00048631912795826793
+Testing accuracy: 0.5791106224060059%
+
+Round 59
+Training loss: 0.000491834303829819
+Testing accuracy: 0.5780765414237976%
+
+Round 60
+Training loss: 0.00048494868678972125
+Testing accuracy: 0.5801447629928589%
+
+Round 61
+Training loss: 0.0005506621673703194
+Testing accuracy: 0.5449844598770142%
+
+Round 62
+Training loss: 0.0005249793757684529
+Testing accuracy: 0.5501551032066345%
+
+Round 63
+Training loss: 0.00044420265476219356
+Testing accuracy: 0.6142709255218506%
+
+Round 64
+Training loss: 0.000396484014345333
+Testing accuracy: 0.6618407368659973%
+
+Round 65
+Training loss: 0.00042617623694241047
+Testing accuracy: 0.6256463527679443%
+
+Round 66
+Training loss: 0.00040614677709527314
+Testing accuracy: 0.6390899419784546%
+
+Round 67
+Training loss: 0.00042527809273451567
+Testing accuracy: 0.6266804337501526%
+
+Round 68
+Training loss: 0.00044639752013608813
+Testing accuracy: 0.6059979200363159%
+
+Round 69
+Training loss: 0.0004918317426927388
+Testing accuracy: 0.5760082602500916%
+
+Round 70
+Training loss: 0.00047006391105242074
+Testing accuracy: 0.5987590551376343%
+
+Round 71
+Training loss: 0.000498041685204953
+Testing accuracy: 0.583247184753418%
+
+Round 72
+Training loss: 0.0004918402410112321
+Testing accuracy: 0.5822130441665649%
+
+Round 73
+Training loss: 0.00048529644845984876
+Testing accuracy: 0.5842812657356262%
+
+Round 74
+Training loss: 0.00044876293395645916
+Testing accuracy: 0.6091002821922302%
+
+Round 75
+Training loss: 0.00039723189547657967
+Testing accuracy: 0.645294725894928%
+
+Round 76
+Training loss: 0.0004597707593347877
+Testing accuracy: 0.6018614172935486%
+
+Round 77
+Training loss: 0.0005146352923475206
+Testing accuracy: 0.5625646114349365%
+
+Round 78
+Training loss: 0.00043797495891340077
+Testing accuracy: 0.619441568851471%
+
+Round 79
+Training loss: 0.00041786255314946175
+Testing accuracy: 0.6359875798225403%
+
+Round 80
+Training loss: 0.00043725030263885856
+Testing accuracy: 0.6163392066955566%
+
+Round 81
+Training loss: 0.0004997025243937969
+Testing accuracy: 0.5729058980941772%
+
+Round 82
+Training loss: 0.00043923076009377837
+Testing accuracy: 0.619441568851471%
+
+Round 83
+Training loss: 0.0004384988860692829
+Testing accuracy: 0.620475709438324%
+
+Round 84
+Training loss: 0.0004941284423694015
+Testing accuracy: 0.583247184753418%
+
+Round 85
+Training loss: 0.0005353537271730602
+Testing accuracy: 0.5553257465362549%
+
+Round 86
+Training loss: 0.0005425553536042571
+Testing accuracy: 0.5563598871231079%
+
+Round 87
+Training loss: 0.00046162528451532125
+Testing accuracy: 0.6142709255218506%
+
+Round 88
+Training loss: 0.0004618071252480149
+Testing accuracy: 0.607032060623169%
+
+Round 89
+Training loss: 0.0004981355741620064
+Testing accuracy: 0.5873836874961853%
+
+Round 90
+Training loss: 0.0004904087400063872
+Testing accuracy: 0.5925542712211609%
+
+Round 91
+Training loss: 0.0004315257247071713
+Testing accuracy: 0.6297828555107117%
+
+Round 92
+Training loss: 0.0004804636409971863
+Testing accuracy: 0.5946225523948669%
+
+Round 93
+Training loss: 0.0005005094571970403
+Testing accuracy: 0.5884177684783936%
+
+Round 94
+Training loss: 0.0004866920062340796
+Testing accuracy: 0.5904860496520996%
+
+Round 95
+Training loss: 0.0004779491573572159
+Testing accuracy: 0.6018614172935486%
+
+Round 96
+Training loss: 0.000484419142594561
+Testing accuracy: 0.5946225523948669%
+
+Round 97
+Training loss: 0.0005298764444887638
+Testing accuracy: 0.5646328926086426%
+
+Round 98
+Training loss: 0.000455642060842365
+Testing accuracy: 0.6132368445396423%
+
+Round 99
+Training loss: 0.000493676750920713
+Testing accuracy: 0.5904860496520996%
+
+Round 100
+Training loss: 0.00046361153363250196
+Testing accuracy: 0.6163392066955566%
+
