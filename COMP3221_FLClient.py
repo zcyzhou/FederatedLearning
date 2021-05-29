@@ -35,8 +35,11 @@ def init_client(client_id, opt, batch_size=5):
     """
     train_path = os.path.join("FLdata", "train", "mnist_train_" + str(client_id) + ".json")
     test_path = os.path.join("FLdata", "test", "mnist_test_" + str(client_id) + ".json")
+    log_path = os.path.join("log", client_id + "_log.txt")
     train_data = {}
     test_data = {}
+
+    f_log = open(log_path, "w+")
 
     with open(os.path.join(train_path), "r") as f_train:
         train_temp = json.load(f_train)
@@ -65,7 +68,7 @@ def init_client(client_id, opt, batch_size=5):
         train_loader = DataLoader(train_data, batch_size)
     test_loader = DataLoader(test_data, test_samples)
 
-    return train_loader, test_loader
+    return train_loader, test_loader, f_log
 
 
 class Client:
@@ -75,7 +78,7 @@ class Client:
         self.opt = opt      # 0: GD, 1: Mini-batch SGD
         self.iterations = iterations
         self.epoch = epoch
-        self.train_loader, self.test_loader = init_client(client_id, opt)
+        self.train_loader, self.test_loader, self.log = init_client(client_id, opt)
         self.model = MLR()
         self.loss = nn.NLLLoss()
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=learning_rate)
@@ -99,19 +102,24 @@ class Client:
         # print(msg)
         self.send_sock.sendto(pickle.dumps(msg), ("localhost", 6000))
 
-    def generate_log(self):
+    def generate_log(self, training_loss, testing_accuracy, iteration):
         """
-        TODO:
-            1. Writing the training loss and accuracy of the global model to the FILE
-                * Generate it at each communication round
-                * File name format ( client(id)_log.txt )
-        :return: None
+        1. Writing the training loss and accuracy of the global model to the FILE
+            * Generate it at each communication round
+            * File name format (client(id)_log.txt)
         """
+        file_content = self.log.readlines()
+        file_content.append("Round {}\n".format(iteration + 1))
+        file_content.append("Training loss: {}\n".format(training_loss))
+        file_content.append("Testing accuracy: {}%\n".format(testing_accuracy))
+        file_content.append("\n")
+        self.log.write("".join(file_content))
 
     def set_global_model(self):
         """
         (Used to called set_parameters())
         Receive a global model from the server, replace the local model with the global model
+        if receive a "close" header, then shutdown the program
         """
         global_weight = []
         state_dict = self.model.state_dict()
@@ -129,6 +137,9 @@ class Client:
                 state_dict['fc1.bias'] = global_bias
                 self.model.load_state_dict(state_dict)
                 break
+            elif msg_header == "close":
+                self.log.close()
+                sys.exit()
 
     def send_local_model(self):
         """
@@ -207,12 +218,11 @@ class Client:
         self.send_local_model()
 
         # Main loop of the client
-        for i in range(1, self.iterations):
-            print("I am client {}".format(self.client_id[-1]))
-            print("Receiving new global model")
-
+        for i in range(self.iterations):
             # Listen the server
             self.set_global_model()
+            print("I am client {}".format(self.client_id[-1]))
+            print("Receiving new global model")
 
             # Evaluate training loss
             training_loss = self.train_loss()
@@ -225,6 +235,9 @@ class Client:
             # Local training
             self.train()
             print("Local training...")
+
+            # write current status to log
+            self.generate_log(training_loss, testing_accuracy, i)
 
             # Send local model to server
             print("Sending new local model")
