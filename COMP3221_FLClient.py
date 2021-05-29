@@ -141,7 +141,7 @@ class Client:
                 self.log.close()
                 sys.exit()
 
-    def send_local_model(self):
+    def send_local_model(self, training_loss, testing_accuracy):
         """
         Sending local model to the Server
         :return: None
@@ -154,6 +154,8 @@ class Client:
                 msg = w.tolist()
                 msg.insert(0, 'weight ' + self.client_id[-1])
                 self.send_sock.sendto(pickle.dumps(msg), ('localhost', 6000))
+        self.send_sock.sendto(pickle.dumps(["train {}".format(training_loss)]), ('localhost', 6000))
+        self.send_sock.sendto(pickle.dumps(["test {}".format(testing_accuracy)]), ('localhost', 6000))
         self.send_sock.sendto(pickle.dumps(["end " + self.client_id[-1]]), ('localhost', 6000))
         # Send bias
         msg = bias.tolist()
@@ -213,10 +215,6 @@ class Client:
         # Init Socket
         self.hand_shaking_to_server()
 
-        # Init model (Just for test, this should be in the main loop)
-        self.set_global_model()
-        self.send_local_model()
-
         # Main loop of the client
         for i in range(self.iterations):
             # Listen the server
@@ -241,7 +239,7 @@ class Client:
 
             # Send local model to server
             print("Sending new local model")
-            self.send_local_model()
+            self.send_local_model(training_loss, testing_accuracy)
 
             # Print an empty line to separate the output
             print("")
