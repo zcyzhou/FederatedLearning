@@ -18,9 +18,9 @@ import random
 import socket
 import sys
 import pickle
-
 import torch
 
+from matplotlib import pyplot as plt
 from utils import MLR
 
 
@@ -35,6 +35,9 @@ class Server:
         self.iterations = 100
         self.clients = dict()
         self.total_data_size = 0
+        # List for storing the average of the training loss and testing accuracy each iteration
+        self.training_loss = []
+        self.testing_accuracy = []
         # Randomly generate the global multinomial logistic regression model w_0
         self.model = MLR()
         # Socket for listening client message
@@ -110,8 +113,11 @@ class Server:
                     }
         """
         client_models = dict()
-        received_model = 0
         new_connection = dict()
+        received_model = 0
+        total_training = 0
+        total_testing = 0
+
         for client in self.clients.keys():
             client_models[client] = dict()
             client_models[client]['weight'] = []
@@ -133,11 +139,19 @@ class Server:
                     client_models[header[1]]['bias'] = torch.Tensor(client_models[header[1]]['bias'])
                     received_model += 1
                     print("Getting local model from client {}".format(header[1]))
+                elif header[0] == 'train':
+                    total_training += float(header[1])
+                elif header[0] == 'test':
+                    total_testing += float(header[1])
                 if received_model == len(self.clients):
                     break
             else:
                 client_id, client_data_size = msg.split()
                 new_connection[client_id] = int(client_data_size)
+
+        # evaluate the global model across all connecting clients
+        self.training_loss.append(total_training)
+        self.testing_accuracy.append(total_testing / received_model)
 
         # update new client id and its data size to the self.clients
         if len(new_connection) > 0:
@@ -181,6 +195,32 @@ class Server:
         for client_id, _ in self.clients.items():
             self.send_sock.sendto(pickle.dumps(msg), ('localhost', 6000 + int(client_id)))
 
+    def generate_training_figure(self):
+        """
+        Generate Training Loss FedAvg figure to the local file.
+        :return: None
+        """
+        plt.figure(1, figsize = (7, 7))
+        plt.plot(self.training_loss, label = "FedAvg", linewidth = 1)
+        plt.legend(loc = 'upper right', prop = {'size': 12}, ncol = 2)
+        plt.ylabel("Training Loss")
+        plt.xlabel("Global rounds")
+        plt.savefig("Training_Loss.png")
+
+    def generate_testing_figure(self):
+        """
+        Generate Testing Accuracy FedAvg figure to the local file.
+        :return: None
+        """
+        plt.clf()
+        plt.figure(1, figsize = (5, 5))
+        plt.plot(self.testing_accuracy, label = "FedAvg", linewidth = 1)
+        plt.ylim([0.1, 0.99])
+        plt.legend(loc = 'upper right', prop = {'size': 12}, ncol = 2)
+        plt.ylabel("Testing Accuracy")
+        plt.xlabel("Global rounds")
+        plt.savefig("Testing_Accuracy.png")
+
     def run(self):
         """
         Body of the server
@@ -213,8 +253,13 @@ class Server:
 
         # After iterations, send the msg to all connecting clients to close their program
         self.send_shutdown_msg()
+
+        # Generate two average figure
+        self.generate_training_figure()
+        self.generate_testing_figure()
         print("Iterations have finished, program is closing...")
         print("")
+
 
 if __name__ == "__main__":
     server = Server(int(sys.argv[1]), int(sys.argv[2]))
