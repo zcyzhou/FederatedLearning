@@ -133,7 +133,8 @@ class Server:
                 if header[0] == 'weight':
                     client_models[header[1]]['weight'].append(msg)
                 elif header[0] == 'end':
-                    client_models[header[1]]['weight'] = torch.Tensor(client_models[header[1]]['weight']).reshape(10, 784)
+                    client_models[header[1]]['weight'] = torch.Tensor(client_models[header[1]]['weight']).reshape(10,
+                                                                                                                  784)
                 elif header[0] == 'bias':
                     client_models[header[1]]['bias'] = msg
                     client_models[header[1]]['bias'] = torch.Tensor(client_models[header[1]]['bias'])
@@ -150,7 +151,7 @@ class Server:
                 new_connection[client_id] = int(client_data_size)
 
         # evaluate the global model across all connecting clients
-        self.training_loss.append(total_training)
+        self.training_loss.append(total_training / self.sub_sample)
         self.testing_accuracy.append(total_testing / received_model)
 
         # update new client id and its data size to the self.clients
@@ -200,9 +201,9 @@ class Server:
         Generate Training Loss FedAvg figure to the local file.
         :return: None
         """
-        plt.figure(1, figsize = (7, 7))
-        plt.plot(self.training_loss, label = "FedAvg", linewidth = 1)
-        plt.legend(loc = 'upper right', prop = {'size': 12}, ncol = 2)
+        plt.figure(1, figsize=(7, 7))
+        plt.plot(self.training_loss, label="FedAvg", linewidth=1)
+        plt.legend(loc='upper right', prop={'size': 12}, ncol=2)
         plt.ylabel("Training Loss")
         plt.xlabel("Global rounds")
         plt.savefig("Training_Loss.png")
@@ -213,10 +214,10 @@ class Server:
         :return: None
         """
         plt.clf()
-        plt.figure(1, figsize = (5, 5))
-        plt.plot(self.testing_accuracy, label = "FedAvg", linewidth = 1)
+        plt.figure(1, figsize=(5, 5))
+        plt.plot(self.testing_accuracy, label="FedAvg", linewidth=1)
         plt.ylim([0.1, 0.99])
-        plt.legend(loc = 'upper right', prop = {'size': 12}, ncol = 2)
+        plt.legend(loc='upper right', prop={'size': 12}, ncol=2)
         plt.ylabel("Testing Accuracy")
         plt.xlabel("Global rounds")
         plt.savefig("Testing_Accuracy.png")
@@ -245,7 +246,7 @@ class Server:
             print("Aggregating new global model")
 
             # Broadcast new model
-            print("Boardcasting new global model")
+            print("Broadcasting new global model")
             self.broadcast_to_clients()
 
             # Print an empty line to separate the output
