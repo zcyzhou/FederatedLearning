@@ -169,6 +169,18 @@ class Server:
         state_dict['fc1.bias'] = new_bias
         self.model.load_state_dict(state_dict)
 
+    def send_shutdown_msg(self):
+        """
+        Broadcast all the connecting clients to shut down their program
+            1. Format the message
+                [<header>, ...]
+                <header>: close
+        :return: None
+        """
+        msg = ["close"]
+        for client_id, _ in self.clients.items():
+            self.send_sock.sendto(pickle.dumps(msg), ('localhost', 6000 + int(client_id)))
+
     def run(self):
         """
         Body of the server
@@ -198,6 +210,11 @@ class Server:
 
             # Print an empty line to separate the output
             print("")
+
+        # After iterations, send the msg to all connecting clients to close their program
+        self.send_shutdown_msg()
+        print("Iterations have finished, program is closing...")
+        print("")
 
 if __name__ == "__main__":
     server = Server(int(sys.argv[1]), int(sys.argv[2]))
