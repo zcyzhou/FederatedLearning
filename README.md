@@ -38,7 +38,7 @@ python3 COMP3221_FLClient.py <Client-id> <Port-Client> <Opt-Method>
 For example:
 ```
 python3 COMP3221_FLClient.py client1 6001 1
-
+```
 ## Notes
 1. Always start the **Server** before starting **Client**
 2. After start a client, the next client should be started within 30s otherwise the server will not receive handshake message from it.
