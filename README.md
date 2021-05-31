@@ -16,8 +16,8 @@ python3 COMP3221_FLServer.py <Port-Server> <Sub-client>
 ```
 * `<Port-Server>` should be the port 6000
 * `<Sub-client>` is the command to determine how many clients' local model to aggregate to form the global model. There are two possible values:
- * `0`: Use all 5 clients
- * `1`: Use 2 out of 5 clients (Pick randomly)
+     * `0`: Use all 5 clients
+     * `1`: Use 2 out of 5 clients (Pick randomly)
 
 For example:
 ```
