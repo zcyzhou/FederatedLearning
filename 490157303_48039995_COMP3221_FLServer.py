@@ -206,7 +206,7 @@ class Server:
         plt.legend(loc='upper right', prop={'size': 12}, ncol=2)
         plt.ylabel("Training Loss")
         plt.xlabel("Global rounds")
-        plt.savefig("Training_Loss.png")
+        plt.savefig("image/single_Training_Loss.png")
 
     def generate_testing_figure(self):
         """
@@ -220,7 +220,7 @@ class Server:
         plt.legend(loc='upper right', prop={'size': 12}, ncol=2)
         plt.ylabel("Testing Accuracy")
         plt.xlabel("Global rounds")
-        plt.savefig("Testing_Accuracy.png")
+        plt.savefig("image/single_Testing_Accuracy.png")
 
     def run(self):
         """
