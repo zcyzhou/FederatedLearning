@@ -5,6 +5,7 @@ its local model and then contributes its local model to the server through the s
 to build the global model.
 
 ## Requirement
+* Please put `FLdata` directory in the same level of `COMP3221_FLClient.py` file
 * `Python` version >= 3.7
 * `Pytorch` version = 1.8.1
 
